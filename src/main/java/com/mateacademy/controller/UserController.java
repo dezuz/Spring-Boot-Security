@@ -2,6 +2,9 @@ package com.mateacademy.controller;
 
 import com.mateacademy.model.UserModel;
 import com.mateacademy.service.UserService;
+import com.mateacademy.service.SecurityService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -11,13 +14,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.security.Principal;
+
 @Controller
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserController {
     private UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private SecurityService utils;
 
     @GetMapping(value = "/user/add")
     public ModelAndView createUser(ModelAndView modelAndView) {
@@ -56,7 +59,8 @@ public class UserController {
     }
 
     @GetMapping("/admin")
-    public String showAdmin() {
-        return "admin.jsp";
+    public String showAdmin(Principal principal) {
+        utils.getUser(principal);
+        return "admin";
     }
 }

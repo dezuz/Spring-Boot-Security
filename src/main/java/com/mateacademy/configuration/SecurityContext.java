@@ -1,18 +1,24 @@
 package com.mateacademy.configuration;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.*;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 
-@Configuration
-public class SecurityContext extends WebSecurityConfigurerAdapter {
+import java.util.HashMap;
+import java.util.Map;
 
-    @Autowired
+@Configuration
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class SecurityContext extends WebSecurityConfigurerAdapter {
     private AccessDeniedHandler accessDeniedHandler;
 
     @Override
@@ -36,12 +42,25 @@ public class SecurityContext extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().accessDeniedHandler(accessDeniedHandler);
     }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        String idForEncode = "bcrypt";
+        Map encoders = new HashMap<>();
+        encoders.put(idForEncode, new BCryptPasswordEncoder());
+        encoders.put("noop", NoOpPasswordEncoder.getInstance());
+        encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
+        encoders.put("scrypt", new SCryptPasswordEncoder());
+        encoders.put("sha256", new StandardPasswordEncoder());
+
+        return new DelegatingPasswordEncoder(idForEncode, encoders);
+    }
+
     @Autowired
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser("Serhij").password("{noop}password").roles("USER")
+                .withUser("user").password("{noop}password").roles("USER")
                 .and()
-                .withUser("admin").password("{noop}password").roles("ADMIN");
+                .withUser("Serhij").password("{noop}password").roles("ADMIN");
     }
 
     @Bean

@@ -11,7 +11,7 @@ import java.security.Principal;
 @Controller
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LoginController {
-    private UserService userService;
+    private final UserService userService;
 
     @GetMapping(value = "/login")
     public String login(Principal principal) {

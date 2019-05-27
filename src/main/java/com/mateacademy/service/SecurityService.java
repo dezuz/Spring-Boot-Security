@@ -21,15 +21,14 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SecurityService {
 
-    private UserService userService;
-    private PasswordEncoder passwordEncoder;
+    private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserModel getUser(Principal principal) {
         UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) principal;
         User user = (User)token.getPrincipal();
 
-        String password = "11111";
-        String encode = passwordEncoder.encode(password);
+        String encode = passwordEncoder.encode(userService.findByFirstName("Serhij").getPassword());
 
         UserModel model = userService.findByFirstName(user.getUsername());
 

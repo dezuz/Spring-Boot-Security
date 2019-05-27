@@ -19,8 +19,8 @@ import java.security.Principal;
 @Controller
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserController {
-    private UserService userService;
-    private SecurityService utils;
+    private final UserService userService;
+    private final SecurityService securityService;
 
     @GetMapping(value = "/user/add")
     public ModelAndView createUser(ModelAndView modelAndView) {
@@ -60,7 +60,7 @@ public class UserController {
 
     @GetMapping("/admin")
     public String showAdmin(Principal principal) {
-        utils.getUser(principal);
+        securityService.getUser(principal);
         return "admin";
     }
 }
